@@ -59,6 +59,8 @@ uza <- data.table(read.spss("datasets/UZA.sav",to.data.frame = TRUE))
 
 #pearson Correlation coefficient between log of road lane mile per 100 pop and log of daily vehicle miles traveled
 
+plot(uza$lnlm,uza$lnvmt)
+
 cor(uza$lnlm,uza$lnvmt) # lanes -> vehicle usage?
 
 uza[,cor.test(lnlm,lnvmt)]  #data.table
@@ -67,14 +69,25 @@ cor.test(uza$lnlm,uza$lnvmt)  # H0: Correlation = 0; H1: Correlation !=0
 
 
 # partial correlation
-install.packages("ggm")
-library(ggm)
-names(uza)
-uza_par<-uza[,c("lnlm","lnvmt","lnfuel")]
-uza_pcor<-pcor(c(1,2,3),cov(uza_par)) #partial correlation coefficient
-uza_pcor
+# install.packages("ppcor")
+# library(ppcor)
+# names(uza)
+# uza_par<-uza[,c("lnlm","lnvmt","lnfuel")]
+# uza_pcor<-pcor(x = uza_par) #partial correlation matrix
+# uza_pcor
+# 
+# dim(uza)
 
-dim(uza)
-pcor.test(r = uza_pcor,q = 1,n = 157)
+install.packages("ppcor")
+library(ppcor)
+
+pcor.test(x = uza$lnlm,y = uza$lnvmt,z = uza$lnfuel)
+
 
 cor.test(uza$vmt,uza$pop000,method="spearman") #Spearman correlation coefficient
+
+library(ggplot2)
+
+ggplot(data=uza,aes(x=vmt,y=pop000))+
+  geom_point()+
+  geom_smooth()
